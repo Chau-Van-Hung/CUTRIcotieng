@@ -1,6 +1,198 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Thông Tin</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    background: url("anhnen.jpg") no-repeat center center fixed;
+    background-size: cover;
+    font-family:Arial;
+    overflow:hidden;
+}
+
+/* làm nền tối lại */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.5);
+    z-index:-1;
+}
+
+.container{
+    width:100vw;
+    height:100vh;
+    display:flex;
+}
+
+/* ẢNH */
+.left{
+    width:33%;
+    background:#001d3d;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.left img{
+    max-width:85%;
+    max-height:85%;
+    border:6px solid white;
+    box-shadow:0 0 25px #00b4d8;
+    transition: transform 20s linear, opacity 0.5s ease;
+}
+
+/* BÊN CHỮ */
+.right{
+    width:67%;
+    position:relative;
+    overflow:hidden;
+    padding-left:60px;
+}
+
+.scroll{
+    position:absolute;
+    width:85%;
+    top:50%;
+    transform:translateY(-50%);
+}
+
+@keyframes scrollUp{
+    0%{
+        transform:translateY(100%);
+    }
+    100%{
+        transform:translateY(-150%);
+    }
+}
+
+.info{
+    font-size:36px;
+    line-height:70px;
+    font-weight:bold;
+    text-shadow:0 0 15px rgba(255,255,255,0.3);
+}
+
+/* TRƯỚC DẤU : */
+.label{
+    color:#ffffff;
+    text-shadow:0 0 12px rgba(0,0,0,0.8);
+}
+
+/* SAU DẤU : */
+.value{
+    color:#00bfff;
+    text-shadow:0 0 12px rgba(0,0,0,0.8);
+}
+
+@media (max-width: 768px){
+    .info{
+        font-size:28px;
+        line-height:55px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left">
+        <img id="photo" src="">
+    </div>
+
+    <div class="right">
+        <div class="scroll" id="scroll">
+            <div class="info" id="data">
+                ĐANG TẢI...
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+
+let currentIndex = 0;
+let people = [];
+let duration = 15000; // 15 giây mỗi người
+
+fetch("thongtin.txt?v=" + Date.now())
+.then(res => res.text())
+.then(text => {
+    people = text.split("===").filter(b => b.trim() !== "");
+    showPerson(currentIndex);
+});
+
+function showPerson(index){
+
+    const lines = people[index].trim().split("\n");
+    let image = "";
+    let content = "";
+
+    lines.forEach(line=>{
+        if(line.startsWith("anh:")){
+            image = line.replace("anh:","").trim();
+        } else if(line.includes(":")){
+            const parts = line.split(":");
+            content += "<span class='label'>" + parts[0] + ":</span> " +
+                       "<span class='value'>" + parts.slice(1).join(":") + "</span><br>";
+        }
+    });
+
+    const img = document.getElementById("photo");
+    const scrollDiv = document.getElementById("scroll");
+
+    img.style.opacity = 0;
+
+    setTimeout(()=>{
+        img.src = image + "?v=" + Date.now();
+        img.style.opacity = 1;
+        img.style.transform = "scale(1.08)";
+    },300);
+
+    setTimeout(()=>{
+        img.style.transform = "scale(1)";
+    }, duration);
+
+    document.getElementById("data").innerHTML = content;
+
+    // đọc người hiện tại
+    speakCurrent();
+
+    // reset animation chữ
+    scrollDiv.style.animation = "none";
+    scrollDiv.offsetHeight;
+    scrollDiv.style.animation = `scrollUp ${duration/1000}s linear`;
+
+    setTimeout(()=>{
+        currentIndex++;
+        if(currentIndex >= people.length){
+            currentIndex = 0;
+        }
+        showPerson(currentIndex);
+    }, duration);
+}
+
+
+/* ===========================
+   GIỌNG NỮ TRANG TRỌNG
+=========================== */
+
 function speakCurrent(){
 
-    // dừng nếu đang đọc người trước
     window.speechSynthesis.cancel();
 
     const text = document.getElementById("data").innerText;
@@ -8,12 +200,10 @@ function speakCurrent(){
     const speech = new SpeechSynthesisUtterance(text);
 
     speech.lang = "vi-VN";
-    speech.rate = 0.9;      // chậm trang trọng
+    speech.rate = 0.9;      // đọc chậm
     speech.pitch = 1.15;    // giọng nữ dịu
 
     const voices = window.speechSynthesis.getVoices();
-
-    // tìm giọng tiếng Việt
     const femaleVoice = voices.find(v => v.lang.includes("vi"));
 
     if(femaleVoice){
@@ -23,10 +213,15 @@ function speakCurrent(){
     window.speechSynthesis.speak(speech);
 }
 
-// tránh lỗi chưa load giọng
+// tránh lỗi load giọng
 window.speechSynthesis.onvoiceschanged = () => {};
 
 // tránh bị chặn autoplay
 document.body.addEventListener("click", () => {
     window.speechSynthesis.resume();
 });
+
+</script>
+
+</body>
+</html>
