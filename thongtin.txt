@@ -45,7 +45,7 @@ Trình độ học vấn: 12/12
 Chuyên môn nghiệp vụ: Đại học chuyên ngành Công nghệ sinh học
 Học hàm, học vị: Thạc sĩ chuyên ngành Sinh học thực nghiệm
 Lý luận chính trị: Sơ cấp
-Nghề nghiệp chức vụ: Người hoạt động không chuyên trách ở thôn , Thôn trưởng
+Nghề nghiệp chức vụ: Người hoạt động không chuyên trách ở thôn, Thôn trưởng
 ===
 anh: NGOVANTRONG.jpg
 Họ và tên: NGÔ VĂN TRỌNG
@@ -302,3 +302,4 @@ Chuyên môn nghiệp vụ: Đại học chuyên ngành Luật
 Học hàm, học vị: Không
 Lý luận chính trị: Trung cấp 
 Nghề nghiệp chức vụ: Người hoạt động không chuyên trách ở xã
+
